@@ -1,0 +1,201 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AuctionStatus {
+  DRAFT
+  ACTIVE
+  ENDED
+  SOLD
+  CANCELLED
+}
+
+enum AuctionCategory {
+  TEXTBOOKS
+  ELECTRONICS
+  CLOTHING
+  FURNITURE
+  SPORTS
+  MUSIC
+  ART
+  GAMING
+  APPLIANCES
+  OTHER
+}
+
+enum AuctionCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(USER)
+  university    String?
+  studentId     String?
+  verified      Boolean   @default(false)
+  banned        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Auth.js relations
+  accounts    Account[]
+  sessions    Session[]
+
+  // App relations
+  auctions     Auction[]   @relation("SellerAuctions")
+  bids         Bid[]
+  watchlist    Watchlist[]
+  reports      Report[]    @relation("ReporterReports")
+  reportedBy   Report[]    @relation("ReportedUser")
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Auction {
+  id               String           @id @default(cuid())
+  sellerId         String
+  title            String
+  description      String           @db.Text
+  category         AuctionCategory
+  condition        AuctionCondition
+  images           String[]
+  startingBid      Float
+  currentBid       Float
+  highestBidderId  String?
+  reservePrice     Float?
+  startTime        DateTime         @default(now())
+  endTime          DateTime
+  status           AuctionStatus    @default(ACTIVE)
+  viewCount        Int              @default(0)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  seller       User        @relation("SellerAuctions", fields: [sellerId], references: [id], onDelete: Cascade)
+  bids         Bid[]
+  watchlistedBy Watchlist[]
+  reports      Report[]    @relation("AuctionReports")
+
+  @@index([status, endTime])
+  @@index([sellerId])
+  @@index([category])
+  @@map("auctions")
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  auctionId String
+  bidderId  String
+  amount    Float
+  createdAt DateTime @default(now())
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  bidder  User    @relation(fields: [bidderId], references: [id], onDelete: Cascade)
+
+  @@index([auctionId, createdAt])
+  @@index([bidderId])
+  @@map("bids")
+}
+
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  auctionId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, auctionId])
+  @@map("watchlist")
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  reporterId  String
+  auctionId   String?
+  targetUserId String?
+  reason      String
+  details     String?      @db.Text
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  reporter   User     @relation("ReporterReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  auction    Auction? @relation("AuctionReports", fields: [auctionId], references: [id], onDelete: SetNull)
+  targetUser User?    @relation("ReportedUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@map("reports")
+}
