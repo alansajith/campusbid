@@ -77,8 +77,12 @@ export function getInitials(name: string | null | undefined): string {
 export function isEduEmail(email: string): boolean {
   const emailLower = email.toLowerCase();
   
-  // Whitelist developer's Resend sandbox testing email in development mode
-  if (process.env.NODE_ENV === "development" && emailLower === "alan.sajith1722@gmail.com") {
+  // Whitelist developer's Resend sandbox testing email in development or bypass modes
+  const isBypass = 
+    process.env.NODE_ENV === "development" || 
+    process.env.NEXT_PUBLIC_DEV_BYPASS_OTP === "true";
+
+  if (isBypass && emailLower === "alan.sajith1722@gmail.com") {
     return true;
   }
 
@@ -90,7 +94,11 @@ export function extractUniversityFromEmail(email: string): string {
   const domain = email.split("@")[1];
   if (!domain) return "Unknown University";
 
-  if (process.env.NODE_ENV === "development" && domain === "gmail.com") {
+  const isBypass = 
+    process.env.NODE_ENV === "development" || 
+    process.env.NEXT_PUBLIC_DEV_BYPASS_OTP === "true";
+
+  if (isBypass && domain === "gmail.com") {
     return "Resend Developer Sandbox";
   }
 

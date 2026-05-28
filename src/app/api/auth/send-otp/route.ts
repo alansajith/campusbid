@@ -65,7 +65,11 @@ export async function POST(request: NextRequest) {
     try {
       await sendOtpEmail(email, otp, university);
     } catch (err: any) {
-      if (process.env.NODE_ENV === "development") {
+      const shouldBypass = 
+        process.env.NODE_ENV === "development" || 
+        process.env.NEXT_PUBLIC_DEV_BYPASS_OTP === "true";
+
+      if (shouldBypass) {
         console.warn(`\n[DEV BYPASS] Resend failed to send OTP email to ${email} due to: ${err.message}`);
         console.warn(`>>> YOUR DEV OTP IS: ${otp} <<<\n`);
         devBypass = true;

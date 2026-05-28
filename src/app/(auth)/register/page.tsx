@@ -69,6 +69,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [bypassOtp, setBypassOtp] = useState<string | null>(null);
 
   // Refresh CAPTCHA
   const refreshCaptcha = () => {
@@ -140,8 +141,10 @@ export default function RegisterPage() {
       setStage("otp");
       if (data.devBypass && data.otp) {
         setOtpDigits(data.otp.split(""));
-        setSuccessMsg(`[Dev Mode] Verification code simulated. The code is ${data.otp} (also logged to terminal).`);
+        setBypassOtp(data.otp);
+        setSuccessMsg(null);
       } else {
+        setBypassOtp(null);
         setSuccessMsg(`Verification code sent to ${email}`);
       }
     } catch {
@@ -247,8 +250,10 @@ export default function RegisterPage() {
       startCooldown();
       if (data.devBypass && data.otp) {
         setOtpDigits(data.otp.split(""));
-        setSuccessMsg(`[Dev Mode] New code simulated. The code is ${data.otp} (also logged to terminal).`);
+        setBypassOtp(data.otp);
+        setSuccessMsg(null);
       } else {
+        setBypassOtp(null);
         setOtpDigits(["", "", "", "", "", ""]);
         setSuccessMsg("New code sent! Check your inbox.");
       }
@@ -299,6 +304,22 @@ export default function RegisterPage() {
             style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "hsl(0 84% 60%)" }} />
             <p style={{ color: "hsl(0 84% 70%)", fontFamily: "var(--font-sans), sans-serif", fontSize: "0.9rem" }}>{error}</p>
+          </div>
+        )}
+
+        {/* Bypass OTP Banner — shown when email delivery is simulated */}
+        {bypassOtp && (
+          <div className="p-4 rounded-xl mb-5 animate-slide-up"
+            style={{ background: "rgba(245,167,30,0.08)", border: "1.5px solid rgba(245,167,30,0.35)" }}>
+            <p style={{ color: "hsl(42 95% 70%)", fontFamily: "var(--font-sans), sans-serif", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "6px" }}>
+              ⚠ Email delivery unavailable — your code is shown below
+            </p>
+            <p style={{ color: "hsl(42 95% 90%)", fontFamily: "'Courier New', monospace", fontSize: "2rem", fontWeight: 900, letterSpacing: "0.3em", margin: 0 }}>
+              {bypassOtp}
+            </p>
+            <p style={{ color: "hsl(42 80% 55%)", fontFamily: "var(--font-sans), sans-serif", fontSize: "0.78rem", marginTop: "6px" }}>
+              The boxes above are already filled — just click Verify &amp; Create Account.
+            </p>
           </div>
         )}
 
