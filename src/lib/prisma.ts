@@ -1,28 +1,27 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma_v3: PrismaClient | undefined;
+  prisma: PrismaClient | undefined;
 };
 
 function createPrismaClient() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set.");
+  }
 
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
-  });
-
-  const adapter = new PrismaPg(pool);
+  // PrismaPg with a connection string (not a Pool) avoids the pg.Pool
+  // connection leak issue on Vercel serverless. Supabase's pgBouncer
+  // on port 6543 handles external connection pooling.
+  const adapter = new PrismaPg({ connectionString });
 
   return new PrismaClient({
     adapter,
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["error", "warn"]
-        : ["error"],
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
 
-export const prisma = globalForPrisma.prisma_v3 ?? createPrismaClient();
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma_v3 = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

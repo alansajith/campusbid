@@ -5,28 +5,28 @@ declare global {
   var _redis: Redis | undefined;
 }
 
-function getRedis(): Redis {
-  if (globalThis._redis) return globalThis._redis;
-
+function createRedis(): Redis {
   const url = process.env.REDIS_URL;
   if (!url) {
     throw new Error("REDIS_URL environment variable is not set.");
   }
 
-  // Upstash (and other cloud Redis) uses rediss:// (TLS). ioredis needs
-  // explicit tls options when the URL scheme is rediss://.
   const isTls = url.startsWith("rediss://");
 
-  const client = new Redis(url, {
+  return new Redis(url, {
     maxRetriesPerRequest: 3,
+    enableReadyCheck: false,
+    lazyConnect: true,         // don't connect until first command
     ...(isTls ? { tls: {} } : {}),
   });
+}
 
-  if (process.env.NODE_ENV !== "production") {
-    globalThis._redis = client;
-  }
-
-  return client;
+function getRedis(): Redis {
+  // Cache across all invocations (even in production on Vercel —
+  // the same container may handle multiple requests)
+  if (globalThis._redis) return globalThis._redis;
+  globalThis._redis = createRedis();
+  return globalThis._redis;
 }
 
 // Lazy proxy — the actual connection is only established the first time
