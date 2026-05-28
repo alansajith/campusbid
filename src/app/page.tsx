@@ -71,7 +71,7 @@ const STATS = [
   { value: 12000, suffix: "+", label: "Active Students", icon: Users },
   { value: 3400, suffix: "+", label: "Auctions Monthly", icon: Gavel },
   { value: 98, suffix: "%", label: "Satisfaction Rate", icon: Star },
-  { value: 2.1, prefix: "$", suffix: "M+", decimals: 1, label: "Items Exchanged", icon: TrendingUp },
+  { value: 17, prefix: "₹", suffix: "Cr+", decimals: 0, label: "Items Exchanged", icon: TrendingUp },
 ];
 
 const HOW_IT_WORKS = [
