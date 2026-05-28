@@ -92,6 +92,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── App pages font scale (all pages except landing) ──────────────────────── */
+/* Landing page keeps the enlarged scale; inner app pages use standard sizing   */
+.app-page {
+  font-size: 0.875rem;
+}
+
+.app-page h1 { font-size: 2.2rem; }
+.app-page h2 { font-size: 1.6rem; }
+.app-page h3 { font-size: 1.25rem; }
+.app-page h4 { font-size: 1.1rem; }
+.app-page h5, .app-page h6 { font-size: 1rem; }
+
 /* ─── Headings — Bodoni Moda (editorial, high-contrast) ──────────────────── */
 h1 {
   font-family: var(--font-display), serif;

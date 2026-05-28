@@ -20,7 +20,7 @@ export default async function WatchlistPage() {
   const watchlist = await getWatchlist();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="app-page flex flex-col min-h-screen">
       <Navbar />
 
       <main className="flex-1 py-10">

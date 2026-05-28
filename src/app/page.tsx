@@ -349,11 +349,11 @@ export default function HomePage() {
                 >
                   {/* Step number watermark */}
                   <div
-                    className="absolute top-5 right-6 font-black opacity-[0.06]"
+                    className="absolute top-5 right-6 font-black opacity-[0.3]"
                     style={{
                       fontFamily: "var(--font-bodoni), serif",
                       fontSize: "5rem",
-                      color: "#ffffff",
+                      color: "#f8f5f5ff",
                       lineHeight: 1,
                     }}
                   >
@@ -394,7 +394,7 @@ export default function HomePage() {
 
                   <p
                     style={{
-                      color: "hsl(215 20% 50%)",
+                      color: "hsla(214, 5%, 71%, 1.00)",
                       fontFamily: "var(--font-baskerville), serif",
                       fontSize: "1.05rem",
                       lineHeight: 1.7,

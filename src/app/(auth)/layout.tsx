@@ -7,7 +7,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex" style={{ background: "hsl(222 47% 4%)" }}>
+    <div className="app-page min-h-screen flex" style={{ background: "hsl(222 47% 4%)" }}>
 
       {/* ── Left Panel — Branding (hidden on mobile) ───────────────────── */}
       <div

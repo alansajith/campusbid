@@ -36,7 +36,7 @@ export default async function AdminDashboardPage() {
   ]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="app-page flex flex-col min-h-screen">
       <Navbar />
 
       <main className="flex-1 py-10">

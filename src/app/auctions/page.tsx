@@ -108,7 +108,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="app-page flex flex-col min-h-screen">
       <Navbar />
 
       <main className="flex-1 py-10">
@@ -154,7 +154,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
               <div>
                 <h3
                   className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsl(215 20% 45%)" }}
+                  style={{ color: "hsla(200, 20%, 97%, 1.00)" }}
                 >
                   Sort By
                 </h3>
@@ -185,7 +185,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
               <div>
                 <h3
                   className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsl(215 20% 45%)" }}
+                  style={{ color: "hsla(210, 14%, 97%, 1.00)" }}
                 >
                   Category
                 </h3>
@@ -216,7 +216,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
               <div>
                 <h3
                   className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsl(215 20% 45%)" }}
+                  style={{ color: "hsla(214, 33%, 96%, 1.00)" }}
                 >
                   Condition
                 </h3>
