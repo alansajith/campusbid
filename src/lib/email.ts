@@ -1,16 +1,40 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY environment variable is not set.");
-  return new Resend(apiKey);
+// ─── Lazy transporter — only created on first call ───────────────────────────
+let _transporter: nodemailer.Transporter | null = null;
+
+function getTransporter(): nodemailer.Transporter {
+  if (_transporter) return _transporter;
+
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!user || !pass) {
+    throw new Error(
+      "GMAIL_USER and GMAIL_APP_PASSWORD environment variables must be set."
+    );
+  }
+
+  _transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
+
+  return _transporter;
 }
 
+// ─── Send OTP Email ───────────────────────────────────────────────────────────
+export async function sendOtpEmail(
+  to: string,
+  otp: string,
+  university: string
+): Promise<void> {
+  const transporter = getTransporter();
+  const from = process.env.GMAIL_USER!;
+  const fromName = process.env.GMAIL_FROM_NAME ?? "CampusBid";
 
-export async function sendOtpEmail(to: string, otp: string, university: string): Promise<void> {
-  const resend = getResend();
-  const { error } = await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL ?? "CampusBid <onboarding@resend.dev>",
+  await transporter.sendMail({
+    from: `"${fromName}" <${from}>`,
     to,
     subject: `Your CampusBid verification code: ${otp}`,
     html: `
@@ -32,7 +56,7 @@ export async function sendOtpEmail(to: string, otp: string, university: string):
           <tr>
             <td style="background:linear-gradient(135deg,#0d1120 0%,#131a30 100%);padding:32px 40px;border-bottom:1px solid rgba(245,167,30,0.15);text-align:center;">
               <span style="font-size:28px;font-weight:900;letter-spacing:-0.5px;">
-                <span style="background:linear-gradient(135deg,#f5a71e,#e07820);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Campus</span><span style="color:#c5cfe0;">Bid</span>
+                <span style="color:#f5a71e;">Campus</span><span style="color:#c5cfe0;">Bid</span>
               </span>
               <p style="margin:8px 0 0;color:#6b7c96;font-size:13px;font-family:sans-serif;letter-spacing:0.1em;text-transform:uppercase;">Student Verification</p>
             </td>
@@ -57,7 +81,7 @@ export async function sendOtpEmail(to: string, otp: string, university: string):
               </div>
 
               <p style="color:#6b7c96;font-size:13px;line-height:1.6;margin:0;font-family:sans-serif;">
-                If you did not attempt to register on CampusBid, you can safely ignore this email. This code cannot be used to access your account.
+                If you did not attempt to register on CampusBid, you can safely ignore this email.
               </p>
             </td>
           </tr>
@@ -79,8 +103,4 @@ export async function sendOtpEmail(to: string, otp: string, university: string):
 </html>
     `.trim(),
   });
-
-  if (error) {
-    throw new Error(`Failed to send OTP email: ${error.message}`);
-  }
 }
