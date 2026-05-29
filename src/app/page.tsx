@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { AnimatedNumber } from "@/components/landing/AnimatedNumber";
+import { TypewriterHero } from "@/components/landing/TypewriterHero";
+
 import {
   Gavel,
   ShieldCheck,
@@ -168,19 +170,8 @@ export default function HomePage() {
             </div>
 
             {/* Headline */}
-            <h1
-              className="mb-6 leading-tight"
-              style={{
-                fontFamily: "var(--font-bodoni), serif",
-                fontSize: "clamp(3rem, 8vw, 5.5rem)",
-                fontWeight: 900,
-                color: "hsl(213 31% 94%)",
-              }}
-            >
-              Your Campus.
-              <br />
-              <span className="gradient-text">Your Marketplace.</span>
-            </h1>
+            <TypewriterHero />
+
 
             <p
               className="max-w-2xl mx-auto mb-12 leading-relaxed"

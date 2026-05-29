@@ -282,12 +282,18 @@ input, textarea, select {
   97% { opacity: 1; }
 }
 
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
 .animate-float { animation: float 4s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
 .animate-slide-up { animation: slide-up 0.4s ease-out forwards; }
 .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
 .animate-countdown { animation: countdown-pulse 1s ease-in-out infinite; }
 .animate-flicker { animation: flicker 6s ease-in-out infinite; }
+.animate-blink { animation: blink 0.8s step-end infinite; }
+
 
 .shimmer {
   background: linear-gradient(90deg, transparent 0%, rgba(245, 167, 30, 0.15) 50%, transparent 100%);
