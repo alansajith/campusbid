@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Navbar } from "@/components/shared/Navbar";
@@ -24,6 +24,7 @@ import {
   Clock,
   Tag,
   FileText,
+  Camera,
 } from "lucide-react";
 
 const STEPS = ["Details", "Images", "Pricing", "Review"];
@@ -33,6 +34,7 @@ export default function CreateAuctionPage() {
   const [isPending, startTransition] = useTransition();
   const [step, setStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -273,26 +275,67 @@ export default function CreateAuctionPage() {
 
                 {/* Upload area */}
                 <div
-                  className="border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer hover:border-indigo-500/50 transition-colors"
+                  className="border-2 border-dashed rounded-2xl p-8 text-center transition-colors"
                   style={{ borderColor: "rgba(255,255,255,0.12)" }}
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(99,102,241,0.5)"; }}
+                  onDragLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
                   onDrop={(e) => {
                     e.preventDefault();
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
                     const fakeEvent = { target: { files: e.dataTransfer.files } } as unknown as React.ChangeEvent<HTMLInputElement>;
                     handleImageUpload(fakeEvent);
                   }}
                 >
                   <Upload className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(215 20% 40%)" }} />
-                  <p className="text-sm font-medium mb-1">Click or drag photos here</p>
-                  <p className="text-xs" style={{ color: "hsl(215 20% 45%)" }}>
+                  <p className="text-sm font-medium mb-1">Drag photos here or use the buttons below</p>
+                  <p className="text-xs mb-5" style={{ color: "hsl(215 20% 45%)" }}>
                     JPG, PNG, WebP · Max 10MB each · Up to 6 photos
                   </p>
+
+                  {/* Action buttons: Upload + Camera */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      style={{
+                        background: "rgba(99,102,241,0.15)",
+                        border: "1px solid rgba(99,102,241,0.3)",
+                        color: "hsl(239 84% 75%)",
+                      }}
+                    >
+                      <ImagePlus className="w-4 h-4" />
+                      Upload Photos
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      style={{
+                        background: "rgba(245,167,30,0.12)",
+                        border: "1px solid rgba(245,167,30,0.3)",
+                        color: "hsl(42 95% 65%)",
+                      }}
+                    >
+                      <Camera className="w-4 h-4" />
+                      Take Photo
+                    </button>
+                  </div>
+
+                  {/* Hidden file inputs */}
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
                     onChange={handleImageUpload}
                     className="hidden"
                   />
@@ -314,21 +357,31 @@ export default function CreateAuctionPage() {
                         )}
                         <button
                           onClick={() => removeImage(i)}
-                          className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ background: "rgba(0,0,0,0.7)" }}
+                          className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center bg-black/60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                         >
-                          <X className="w-3 h-3 text-white" />
+                          <X className="w-3.5 h-3.5 text-white" />
                         </button>
                       </div>
                     ))}
                     {form.images.length < 6 && (
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="aspect-square rounded-xl border-2 border-dashed flex items-center justify-center hover:border-indigo-500/50 transition-colors"
-                        style={{ borderColor: "rgba(255,255,255,0.12)" }}
-                      >
-                        <ImagePlus className="w-6 h-6" style={{ color: "hsl(215 20% 40%)" }} />
-                      </button>
+                      <div className="aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                          title="Upload photo"
+                        >
+                          <ImagePlus className="w-5 h-5" style={{ color: "hsl(215 20% 40%)" }} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => cameraInputRef.current?.click()}
+                          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                          title="Take photo"
+                        >
+                          <Camera className="w-5 h-5" style={{ color: "hsl(42 95% 60%)" }} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
