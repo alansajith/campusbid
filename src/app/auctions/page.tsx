@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { AuctionCard, AuctionCardSkeleton } from "@/components/auction/AuctionCard";
+import { AuctionSidebar } from "@/components/auction/AuctionSidebar";
 import { getAuctions } from "@/actions/auction";
 import { CATEGORY_LABELS, CONDITION_LABELS } from "@/lib/utils";
-import { Search, SlidersHorizontal, Gavel } from "lucide-react";
+import { Search, Gavel } from "lucide-react";
 import Link from "next/link";
 import type { AuctionCategory, AuctionCondition } from "@/generated/prisma";
 
@@ -107,6 +108,11 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
     return `/auctions?${new URLSearchParams(newParams as Record<string, string>)}`;
   }
 
+  // Pre-build all filter URLs server-side so we can pass them to the client component
+  const sortUrls = Object.fromEntries(sortOptions.map((o) => [o.value, buildFilterUrl("sort", o.value)]));
+  const categoryUrls = Object.fromEntries(categories.map(([v]) => [v, buildFilterUrl("category", v)]));
+  const conditionUrls = Object.fromEntries(conditions.map(([v]) => [v, buildFilterUrl("condition", v)]));
+
   return (
     <div className="app-page flex flex-col min-h-screen">
       <Navbar />
@@ -128,9 +134,9 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
 
           {/* Search bar */}
           <form className="mb-6">
-            <div className="relative max-w-lg">
+            <div className="relative max-w-sm">
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
                 style={{ color: "hsl(215 20% 45%)" }}
               />
               <input
@@ -138,7 +144,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
                 name="search"
                 defaultValue={params.search}
                 placeholder="Search auctions…"
-                className="input-base pl-11 pr-4 py-3 w-full"
+                className="input-base pl-10 pr-4 py-2 text-sm w-full"
               />
               {/* Preserve other params */}
               {params.category && <input type="hidden" name="category" value={params.category} />}
@@ -148,112 +154,19 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
           </form>
 
           <div className="flex gap-8">
-            {/* Sidebar filters */}
-            <aside className="hidden lg:block w-52 flex-shrink-0 space-y-6">
-              {/* Sort */}
-              <div>
-                <h3
-                  className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsla(200, 20%, 97%, 1.00)" }}
-                >
-                  Sort By
-                </h3>
-                <div className="space-y-1">
-                  {sortOptions.map((opt) => (
-                    <Link
-                      key={opt.value}
-                      href={buildFilterUrl("sort", opt.value)}
-                      className="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors"
-                      style={{
-                        background:
-                          (params.sort || "endTime") === opt.value
-                            ? "rgba(99,102,241,0.15)"
-                            : "transparent",
-                        color:
-                          (params.sort || "endTime") === opt.value
-                            ? "hsl(239 84% 75%)"
-                            : "hsl(215 20% 55%)",
-                      }}
-                    >
-                      {opt.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Category */}
-              <div>
-                <h3
-                  className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsla(210, 14%, 97%, 1.00)" }}
-                >
-                  Category
-                </h3>
-                <div className="space-y-1">
-                  {categories.map(([value, label]) => (
-                    <Link
-                      key={value}
-                      href={buildFilterUrl("category", value)}
-                      className="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
-                      style={{
-                        background:
-                          params.category === value
-                            ? "rgba(99,102,241,0.15)"
-                            : "transparent",
-                        color:
-                          params.category === value
-                            ? "hsl(239 84% 75%)"
-                            : "hsl(215 20% 55%)",
-                      }}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Condition */}
-              <div>
-                <h3
-                  className="text-xs font-semibold uppercase tracking-wider mb-3"
-                  style={{ color: "hsla(214, 33%, 96%, 1.00)" }}
-                >
-                  Condition
-                </h3>
-                <div className="space-y-1">
-                  {conditions.map(([value, label]) => (
-                    <Link
-                      key={value}
-                      href={buildFilterUrl("condition", value)}
-                      className="flex items-center px-3 py-2 rounded-lg text-sm transition-colors"
-                      style={{
-                        background:
-                          params.condition === value
-                            ? "rgba(99,102,241,0.15)"
-                            : "transparent",
-                        color:
-                          params.condition === value
-                            ? "hsl(239 84% 75%)"
-                            : "hsl(215 20% 55%)",
-                      }}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Clear filters */}
-              {(params.category || params.condition || params.sort) && (
-                <Link
-                  href="/auctions"
-                  className="btn btn-ghost text-sm px-3 py-2 w-full"
-                  style={{ color: "hsl(0 84% 65%)" }}
-                >
-                  Clear Filters
-                </Link>
-              )}
-            </aside>
+            {/* Sidebar filters — client component with animations */}
+            <AuctionSidebar
+              sortOptions={sortOptions}
+              sortUrls={sortUrls}
+              categories={categories}
+              categoryUrls={categoryUrls}
+              conditions={conditions}
+              conditionUrls={conditionUrls}
+              activeSort={params.sort || "endTime"}
+              activeCategory={params.category}
+              activeCondition={params.condition}
+              hasFilters={!!(params.category || params.condition || params.sort)}
+            />
 
             {/* Auction grid */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
