@@ -169,7 +169,7 @@ export default async function AuctionsPage({ searchParams }: PageProps) {
             />
 
             {/* Auction grid */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 content-start">
               <Suspense
                 fallback={
                   <>
