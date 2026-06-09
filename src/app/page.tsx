@@ -528,7 +528,7 @@ export default function HomePage() {
                             fontWeight: 700,
                           }}
                         >
-                          ${auction.currentBid.toLocaleString()}
+                          ₹{auction.currentBid.toLocaleString()}
                         </p>
                       </div>
                       <div

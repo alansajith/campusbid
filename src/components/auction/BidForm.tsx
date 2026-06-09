@@ -155,7 +155,7 @@ export function BidForm({
             className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold"
             style={{ color: "hsl(215 20% 50%)" }}
           >
-            $
+            ₹
           </span>
           <input
             type="number"

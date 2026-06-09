@@ -48,7 +48,7 @@ export function validateBid({
   if (amount < minimumBid) {
     return {
       valid: false,
-      error: `Bid must be at least $${minimumBid.toFixed(2)} (current: $${auction.currentBid.toFixed(2)}).`,
+      error: `Bid must be at least ₹${minimumBid.toFixed(2)} (current: ₹${auction.currentBid.toFixed(2)}).`,
     };
   }
 
@@ -58,12 +58,12 @@ export function validateBid({
 /**
  * Calculate minimum acceptable bid based on current bid.
  * Uses tiered increments similar to eBay:
- * - Under $25: $0.50 increments
- * - $25–$99: $1 increments
- * - $100–$249: $2.50 increments
- * - $250–$499: $5 increments
- * - $500–$999: $10 increments
- * - $1000+: $25 increments
+ * - Under ₹25: ₹0.50 increments
+ * - ₹25–₹99: ₹1 increments
+ * - ₹100–₹249: ₹2.50 increments
+ * - ₹250–₹499: ₹5 increments
+ * - ₹500–₹999: ₹10 increments
+ * - ₹1000+: ₹25 increments
  */
 export function getMinimumBid(currentBid: number): number {
   if (currentBid < 25) return Math.ceil((currentBid + 0.5) * 100) / 100;
