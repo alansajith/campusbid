@@ -470,6 +470,86 @@ input, textarea, select {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  /* ─── Mobile Typography Scales ─────────────────────────────── */
+  body {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  h5, h6 {
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  /* App-page headings on mobile */
+  .app-page h1 { font-size: 1.75rem; }
+  .app-page h2 { font-size: 1.4rem; }
+  .app-page h3 { font-size: 1.15rem; }
+  .app-page h4 { font-size: 1rem; }
+  .app-page h5, .app-page h6 { font-size: 0.95rem; }
+
+  /* ─── Mobile Form Elements ─────────────────────────────────── */
+  .input-base {
+    padding: 0.6rem 0.85rem;
+    font-size: 1rem;
+    border-radius: 0.65rem;
+  }
+
+  .input-base.pl-11 { padding-left: 2.25rem; }
+  .input-base.pl-8  { padding-left: 1.75rem; }
+  .input-base.pr-4  { padding-right: 0.85rem; }
+  .input-base.pr-11 { padding-right: 2.25rem; }
+  .input-base.pr-12 { padding-right: 2.75rem; }
+
+  /* ─── Mobile Buttons ───────────────────────────────────────── */
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    border-radius: 0.65rem;
+  }
+
+  /* ─── Mobile Badges ────────────────────────────────────────── */
+  .badge {
+    padding: 0.15rem 0.55rem;
+    font-size: 0.65rem;
+  }
+
+  /* ─── Mobile Stat Numbers ──────────────────────────────────── */
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  /* ─── Mobile Cards / Glass ─────────────────────────────────── */
+  .glass {
+    border-radius: 0.875rem;
+  }
+
+  /* ─── Disable hover transforms on touch devices ────────────── */
+  .card-hover:hover {
+    transform: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
 }
 
 /* ─── Decorative Lines / Dividers ───────────────────────────────────────────── */
