@@ -17,6 +17,7 @@ import {
   RefreshCw,
   ShieldCheck,
   ArrowRight,
+  Phone,
 } from "lucide-react";
 import { isEduEmail, extractUniversityFromEmail } from "@/lib/utils";
 
@@ -46,6 +47,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [detectedUniversity, setDetectedUniversity] = useState<string | null>(null);
@@ -105,6 +107,10 @@ export default function RegisterPage() {
 
     if (!isEduEmail(email)) {
       setError("Please use a valid college email (.edu, .ac.in, etc.) to verify student status.");
+      return;
+    }
+    if (phone.length < 10) {
+      setError("Please enter a valid phone number.");
       return;
     }
     if (password.length < 8) {
@@ -208,7 +214,7 @@ export default function RegisterPage() {
       const regRes = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, phone }),
       });
       const regData = await regRes.json();
       if (!regRes.ok) {
@@ -498,6 +504,24 @@ export default function RegisterPage() {
               </span>
             </div>
           )}
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label htmlFor="phone" className="block mb-2" style={labelStyle}>Phone Number</label>
+          <div className="relative">
+            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "hsl(215 20% 40%)" }} />
+            <input
+              id="phone"
+              type="tel"
+              required
+              placeholder="Your phone number"
+              className="input-base pl-11"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+            />
+          </div>
         </div>
 
         {/* Password */}

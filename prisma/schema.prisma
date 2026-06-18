@@ -66,6 +66,7 @@ model User {
   role          UserRole  @default(USER)
   university    String?
   studentId     String?
+  phone         String?
   verified      Boolean   @default(false)
   banned        Boolean   @default(false)
   createdAt     DateTime  @default(now())

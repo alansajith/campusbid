@@ -129,7 +129,7 @@ export async function getAuctionById(id: string) {
     where: { id },
     include: {
       seller: {
-        select: { id: true, name: true, image: true, university: true },
+        select: { id: true, name: true, image: true, university: true, email: true, phone: true },
       },
       bids: {
         orderBy: { createdAt: "desc" },

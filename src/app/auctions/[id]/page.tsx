@@ -24,6 +24,8 @@ import {
   Share2,
   Heart,
   ShieldCheck,
+  Mail,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -201,6 +203,20 @@ export default async function AuctionDetailPage({ params }: PageProps) {
                         {seller.university || "University Student"}
                       </span>
                     </div>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <Mail className="w-3.5 h-3.5" style={{ color: "hsl(239 84% 70%)" }} />
+                      <span className="text-sm" style={{ color: "hsl(215 20% 50%)" }}>
+                        {seller.email}
+                      </span>
+                    </div>
+                    {seller.phone && (
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <Phone className="w-3.5 h-3.5" style={{ color: "hsl(239 84% 70%)" }} />
+                        <span className="text-sm" style={{ color: "hsl(215 20% 50%)" }}>
+                          {seller.phone}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs" style={{ color: "hsl(142 71% 45%)" }}>
                     <ShieldCheck className="w-4 h-4" />

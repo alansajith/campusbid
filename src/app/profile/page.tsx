@@ -5,6 +5,7 @@ import { AuctionCard } from "@/components/auction/AuctionCard";
 import { getCurrentUser } from "@/lib/auth";
 import { getUserAuctions } from "@/actions/auction";
 import { getUserBids } from "@/actions/bid";
+import { updateUser } from "@/actions/user";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
 import {
   Gavel,
@@ -14,6 +15,8 @@ import {
   CheckCircle2,
   Package,
   ShieldCheck,
+  Pencil,
+  Phone,
 } from "lucide-react";
 import type { AuctionWithRelations } from "@/types";
 
@@ -21,6 +24,52 @@ export const metadata = {
   title: "My Profile",
   description: "Your CampusBid seller and bidder dashboard.",
 };
+
+async function EditProfileForm({ user }: { user: { name?: string | null; university?: string | null; studentId?: string | null; phone?: string | null; email: string } }) {
+  return (
+    <form
+      action={async (formData) => {
+        "use server";
+        await updateUser({
+          name: formData.get("name") as string || undefined,
+          university: formData.get("university") as string || undefined,
+          studentId: formData.get("studentId") as string || undefined,
+          phone: formData.get("phone") as string || undefined,
+        });
+      }}
+      className="rounded-2xl p-6 mt-6"
+      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "var(--font-outfit)" }}>
+        <Pencil className="w-4 h-4" />
+        Edit Profile
+      </h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs mb-1.5" style={{ color: "hsl(215 20% 55%)" }}>Name</label>
+          <input name="name" defaultValue={user.name || ""} className="input input-bordered w-full text-sm" placeholder="Your name" />
+        </div>
+        <div>
+          <label className="block text-xs mb-1.5" style={{ color: "hsl(215 20% 55%)" }}>University</label>
+          <input name="university" defaultValue={user.university || ""} className="input input-bordered w-full text-sm" placeholder="Your university" />
+        </div>
+        <div>
+          <label className="block text-xs mb-1.5" style={{ color: "hsl(215 20% 55%)" }}>Student ID</label>
+          <input name="studentId" defaultValue={user.studentId || ""} className="input input-bordered w-full text-sm" placeholder="Student ID" />
+        </div>
+        <div>
+          <label className="block text-xs mb-1.5" style={{ color: "hsl(215 20% 55%)" }}>
+            <span className="flex items-center gap-1">
+              <Phone className="w-3 h-3" /> Phone (shown to buyers)
+            </span>
+          </label>
+          <input name="phone" type="tel" defaultValue={user.phone || ""} className="input input-bordered w-full text-sm" placeholder="Your phone number" />
+        </div>
+      </div>
+      <button type="submit" className="btn btn-primary mt-4 text-sm">Save Changes</button>
+    </form>
+  );
+}
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -85,6 +134,9 @@ export default async function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* Edit profile form */}
+          <EditProfileForm user={user as { name?: string | null; university?: string | null; studentId?: string | null; phone?: string | null; email: string }} />
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">

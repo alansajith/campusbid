@@ -9,6 +9,7 @@ const registerSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
   password: z.string().min(8).max(128),
+  phone: z.string().min(10).max(20),
 });
 
 export async function POST(request: NextRequest) {
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, password } = parsed.data;
+    const { name, email, password, phone } = parsed.data;
 
     // Educational email enforcement
     if (!isEduEmail(email)) {
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         university,
+        phone,
         verified: true, // Email ownership confirmed via OTP
       },
       select: {
@@ -68,6 +70,7 @@ export async function POST(request: NextRequest) {
         name: true,
         email: true,
         university: true,
+        phone: true,
       },
     });
 
